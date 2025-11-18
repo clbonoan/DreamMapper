@@ -46,17 +46,56 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     
+    @State private var xOffset: CGFloat = 0
+    
+    // console log to see if google fonts were correctly added
+    init() {
+        for family in UIFont.familyNames {
+            print(family)
+            for name in UIFont.fontNames(forFamilyName: family) {
+                print("  \(name)")
+            }
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 Color(hex: "#F4F3EE") 
                     .ignoresSafeArea()
                 VStack {
-                    Text("INSERT NAME")
-                        .font(.system(size: 55, weight: .bold, design: .rounded))
+                    Image("dream-home")
+                        // rotate line image to the left to make it leveled
+                        .rotationEffect(.degrees(-18))
+                        .offset(x: -60)
+                        // decrease space between image and title
+                        .padding(.bottom, 0)
+                        // decrease padding at top of image
+                        .padding(.top, -50)
+                    Text("DreamEx")
+                        .font(.custom("MouseMemoirs-Regular", size: 110))
                         .foregroundColor(Color(hex: "#B6CFB6"))
+                        // add space in between letters
+                        .tracking(3)
+                        .padding(.top, -50)
                         .navigationBarBackButtonHidden(true)
-                        .padding(.bottom, -60)
+                    Text("Your Personal Dream Companion")
+                        .font(.custom("AlegreyaSans-Medium", size: 26))
+                        .foregroundColor(Color(hex: "#484848"))
+                        .padding(.bottom, 30)
+                    
+                    // after clicking get started, show nav bar
+                    NavigationLink(destination: TabsView()) {
+                        Text("Ready")
+                            .font(.custom("AlegreyaSans-Medium", size: 22))
+                            .padding(.vertical, 14)
+                            .padding(.horizontal, 20)
+                            .background(Color(hex: "#B6CFB6"))
+                            .foregroundColor(Color(hex: "#484848"))
+                            .cornerRadius(10)
+                        
+                    }
+                        
                 }
             }
         }
