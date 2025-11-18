@@ -11,8 +11,8 @@ struct TabsView: View {
     
     var body: some View {
         TabView {
-            NavigationStack { HomeView() }
-                .tabItem { Label("Home", systemImage: "cloud.fill") }
+            NavigationStack { DreamPromptView() }
+                .tabItem { Label("Dream", systemImage: "cloud.fill") }
                 
             NavigationStack { DreamMapView() }
                 .tabItem { Label("Map", systemImage: "map.fill") }
