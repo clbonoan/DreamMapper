@@ -11,9 +11,11 @@ import SwiftData
 @Model
 final class Dream {
     var timestamp: Date
+    var newDream: String?
     
-    init(timestamp: Date) {
+    init(timestamp: Date, newDream: String? = nil) {
         self.timestamp = timestamp
+        self.newDream = newDream
     }
 }
 

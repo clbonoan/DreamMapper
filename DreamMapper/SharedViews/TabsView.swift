@@ -23,7 +23,7 @@ struct TabsView: View {
             NavigationStack { SettingsView() }
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
-        .tint(Color(hex: "#C5C6C8"))
+        .tint(Color(hex: "#484848"))
         .navigationBarBackButtonHidden(true)
         
     }
