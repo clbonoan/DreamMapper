@@ -72,7 +72,7 @@ struct HomeView: View {
                         .padding(.bottom, 0)
                         // decrease padding at top of image
                         .padding(.top, -50)
-                    Text("DreamEx")
+                    Text("Dreamí")
                         .font(.custom("MouseMemoirs-Regular", size: 110))
                         .foregroundColor(Color(hex: "#B6CFB6"))
                         // add space in between letters
