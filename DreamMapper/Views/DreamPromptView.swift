@@ -10,31 +10,11 @@ import SwiftData
 
 struct DreamPromptView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Dream.createdAt, order: .reverse)
-    private var dreams: [Dream]
     
-    // variables for typing title, dream, and focusing cursor in text box
-    @State private var dreamTitle = ""
-    @State private var dreamText = ""
+    @StateObject private var controller = DreamPromptController()
+    
+    // variable for focusing cursor in text box
     @FocusState private var isTextFocused: Bool
-    
-    // action button for submitting text
-    @State private var isSubmitted = false
-    
-    // test Ollama button
-    @State private var pingOutput: String = ""
-    private let ollama = OllamaClient()
-    
-    // check for Ollama running and output results
-    @State private var isAnalyzing = false
-    @State private var analysisPreview: String = ""
-    
-    // state for alerts
-    @State private var showAlert = false
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    
-    private let minChars = 8
     
     var body: some View {
         NavigationStack {
@@ -53,7 +33,7 @@ struct DreamPromptView: View {
                         
                         // text field for dream title
                         ZStack(alignment: .topLeading) {
-                            TextField("Title", text: $dreamTitle)
+                            TextField("Title", text: $controller.dreamTitle)
                                 .font(.custom("AlegreyaSans-Regular", size: 20))
                                 .textInputAutocapitalization(.words)
                                 .disableAutocorrection(true)
@@ -69,7 +49,7 @@ struct DreamPromptView: View {
                         
                         // text editor for dream input
                         ZStack(alignment: .topLeading) {
-                            TextEditor(text: $dreamText)
+                            TextEditor(text: $controller.dreamText)
                                 .font(.custom("AlegreyaSans-Regular", size: 18))
                                 .focused($isTextFocused)
                                 .padding(12)
@@ -83,7 +63,7 @@ struct DreamPromptView: View {
                                 )
                                 .scrollContentBackground(.hidden)
                             
-                            if dreamText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            if controller.dreamText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Text("type your dream here...")
                                     .foregroundColor(.secondary)
                                     .padding(.horizontal, 15)
@@ -91,93 +71,13 @@ struct DreamPromptView: View {
                             }
                         }
                         
-                        // button for sending dream
+                        // analyze button for sending dream
                         Button {
                             // hide keyboard
                             isTextFocused = false
-                            
-                            // validation for dream entry
-                            let text = dreamText.trimmingCharacters(in: .whitespacesAndNewlines)
-                            let title = dreamTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                            guard text.count >= 8 else { return }
-                            
-                            // load analysis preview
-                            isAnalyzing = true
-                            analysisPreview = ""
-                            
-                            // call ollama
-                            Task {
-                                do {
-                                    let out = try await ollama.generateAnalysis(text: text, title: title)
-                                    
-                                    // convert motifs from DTO -> SwiftData models
-                                    let motifModels = out.motifs.map { motifDTO in Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)
-                                    }
-                                    
-                                    // create a new Dream model
-                                    let dream = Dream(
-                                        title: title.isEmpty ? "Untitled dream" : title,
-                                        text: text,
-                                        summary: out.summary,
-                                        sentiment: out.sentiment,
-                                        personalInterpretation: out.personalInterpretation,
-                                        whatToDoNext: out.whatToDoNext,
-                                        motifs: motifModels
-                                    )
-                                    
-                                    // insert into SwiftData and save
-                                    modelContext.insert(dream)
-                                    do {
-                                        try modelContext.save()
-                                    } catch {
-                                        print("failed to save dream: \(error)")
-                                    }
-                                    
-                                    // show preview on screen to see if it worked
-                                    let motifsText = out.motifs.map { motif in
-                                        "- \(motif.symbol): \(motif.meaning)"
-                                    }.joined(separator: "\n")
-                                    
-                                    // print in console to check output
-                                    print("TITLE:", title)
-                                    print("SUMMARY:", out.summary)
-                                    print("MOTIFS:", out.motifs)
-                                    
-                                    // preview on screen
-                                    analysisPreview = """
-                                    Summary:
-                                    \(out.summary)
-
-                                    Motifs:
-                                    \(motifsText.isEmpty ? "(none)" : motifsText)
-                                    """
-                                    
-                                    // clear inputs after successful return
-                                    await MainActor.run {
-                                        dreamTitle = ""
-                                        dreamText = ""
-                                        alertTitle = "Success"
-                                        alertMessage = "Your dream has been analyzed and saved!"
-                                        showAlert = true
-                                        // move focus back to editor when done
-                                        isTextFocused = true
-                                    }
-                                } catch {
-                                    await MainActor.run {
-                                        analysisPreview = "Analysis failed: \(error.localizedDescription)"
-                                        alertTitle = "Error"
-                                        alertMessage = error.localizedDescription + "\nPlease try again."
-                                        showAlert = true
-                                    }
-                                }
-                                
-                                // if it is clearing inputs, that means it's done analyzing
-                                await MainActor.run {
-                                    isAnalyzing = false
-                                }
-                            }
+                            controller.analyzeDream()
                         } label: {
-                            if isAnalyzing {
+                            if controller.isAnalyzing {
                                 // show rotating wheel when analyzing is in progress
                                 ProgressView()
                                     .padding(.vertical, 12)
@@ -192,27 +92,20 @@ struct DreamPromptView: View {
                         .background(Color(hex: "#B6CFB6"), in: Capsule())
                         .foregroundColor(.black)
                         .padding(.top, 6)
-                        .disabled(isAnalyzing || dreamText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(!controller.canAnalyze)
                         
                         // show summary preview
-                        if !analysisPreview.isEmpty {
-                            Text(analysisPreview)
+                        if !controller.analysisPreview.isEmpty {
+                            Text(controller.analysisPreview)
                                 .font(.footnote)
                                 .foregroundColor(.black)
                                 .multilineTextAlignment(.leading)
                                 .padding(.top, 6)
                         }
                         
-                        // check if ollama is connected
+                        // test ollama button
                         Button("Test Ollama Connection") {
-                            Task {
-                                do {
-                                    let models = try await ollama.pingModels()
-                                    pingOutput = "Ollama is reachable\nModels: \(models.joined(separator: ", "))"
-                                } catch {
-                                    pingOutput = "Could not reach Ollama \n\(error.localizedDescription)"
-                                }
-                            }
+                            controller.testOllamaConnection()
                         }
                         .font(.custom("AlegreyaSans-Regular", size: 14))
                         .padding(.vertical, 10)
@@ -221,33 +114,34 @@ struct DreamPromptView: View {
                         .foregroundColor(.black)
                         .padding(.top, 6)
                         
-                        if !pingOutput.isEmpty {
-                            Text(pingOutput)
+                        if !controller.pingOutput.isEmpty {
+                            Text(controller.pingOutput)
                                 .font(.footnote)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.top, 4)
                         }
-
-
                     }
                     Spacer()
                 }
                 .padding(.horizontal, 24)
-                .alert(alertTitle, isPresented: $showAlert) {
+                .alert(controller.alertTitle, isPresented: $controller.showAlert) {
                     Button("ok", role: .cancel) {}
                 } message: {
-                    Text(alertMessage)
+                    Text(controller.alertMessage)
                 }
             }
         }
+        .onAppear {
+            controller.attachContext(modelContext)
+        }
+        .onChange(of: controller.shouldRefocusEditor) {
+            if controller.shouldRefocusEditor {
+                isTextFocused = true
+                controller.shouldRefocusEditor = false
+            }
+        }
     }
-    
-    // function to save user's dream
-//    private func saveDream() {
-//        
-//    }
-    
 }
 
 // separate view to manage the live updating clock

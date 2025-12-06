@@ -10,8 +10,7 @@ import SwiftData
 
 struct DreamListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Dream.createdAt, order: .reverse)
-    private var dreams: [Dream]
+    @StateObject private var controller = DreamListController()
     
     var body: some View {
         NavigationStack {
@@ -21,7 +20,7 @@ struct DreamListView: View {
                 
                 // use Group to combine multiple views (DreamDetailView and DreamRowView)
                 Group {
-                    if dreams.isEmpty {
+                    if controller.dreams.isEmpty {
                         ContentUnavailableView {
                             Label("No Dreams", systemImage: "zzz")
                                 .font(.custom("AlegreyaSans-Medium", size: 26))
@@ -33,7 +32,7 @@ struct DreamListView: View {
                     } else {
                         List {
                             // show list of dreams
-                            ForEach(dreams) { dream in
+                            ForEach(controller.dreams) { dream in
                                 NavigationLink {
                                     DreamDetailView(dream: dream)
                                 } label: {
@@ -44,7 +43,7 @@ struct DreamListView: View {
                                     dream.sentimentColor.opacity(0.6)
                                 )
                             }
-                            .onDelete(perform: delete)
+                            .onDelete(perform: controller.delete)
                         }
                         .listStyle(.insetGrouped)
                         .scrollContentBackground(.hidden)
@@ -60,11 +59,9 @@ struct DreamListView: View {
 //                }
 //            }
         }
-    }
-    // allow user to delete their dream (default is swiping left on item)
-    private func delete(at offsets: IndexSet) {
-        for i in offsets { modelContext.delete(dreams[i]) }
-        try? modelContext.save()
+        .onAppear {
+            controller.attachContext(modelContext)
+        }
     }
 }
 

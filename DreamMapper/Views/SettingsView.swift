@@ -10,17 +10,77 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Dream]
+    @StateObject private var controller = SettingsController()
     
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(hex: "#F4F3EE")
-                    .ignoresSafeArea()
+        ZStack {
+            Color(hex: "#F4F3EE")
+                .ignoresSafeArea()
+            
+            Form {
+                // option to delete analyzed dreams
+                Section {
+                    Button(role: .destructive) {
+                        controller.requestDeleteAllData()
+                    } label: {
+                        Text("Delete All Dreams & Analysis")
+                            .font(.custom("AlegreyaSans-Bold", size: 20))
+                            .foregroundColor(Color(hex: "#484848"))
+                    }
+                    .disabled(controller.isDeleting)
+                }
+                .listRowBackground(Color(hex: "#B6CFB6"))
                 
+                // about section
+                Section {
+                    Button {
+                        controller.showAbout()
+                    } label: {
+                        Text("Learn More")
+                            .font(.custom("AlegreyaSans-Bold", size: 20))
+                            .foregroundColor(Color(hex: "#484848"))
+                    }
+                    
+                    // static info preview
+                    Text("Dreamí lets you discover your dreams and explore their meanings.")
+                        .font(.custom("AlegreyaSans-Light", size: 18))
+                }
+                .listRowBackground(Color(hex: "#B6CFB6"))
             }
+            .navigationTitle("Settings")
+        }
+        .onAppear {
+            controller.attachContext(modelContext)
         }
         
+        // first confirmation for deleting data
+        .alert(
+            "Are you sure?",
+            isPresented: $controller.showConfirmed
+        ) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete All", role: .destructive) {
+                // actual deletion
+                controller.deleteAllData()
+            }
+        } message: {
+            Text("This permanently deletes all your dreams and their analyses. \nThis action cannot be undone.")
+        }
+        
+        // result alert (deleted or error)
+        .alert(
+            controller.resultTitle,
+            isPresented: $controller.showResultAlert
+        ) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(controller.resultMessage)
+        }
+        
+        // learn more sheet
+        .sheet(isPresented: $controller.showAboutInfo) {
+            AboutDreamiView()
+        }
     }
 }
 

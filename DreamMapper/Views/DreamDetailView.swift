@@ -9,8 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct DreamDetailView: View {
-    @StateObject private var fontScaler = FontScaler()
-    let dream: Dream
+    @StateObject private var controller: DreamDetailController
+    
+    init(dream: Dream) {
+        _controller = StateObject(wrappedValue: DreamDetailController(dream: dream))
+    }
     
     var body: some View {
         ZStack {
@@ -20,25 +23,37 @@ struct DreamDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     // separated sections for dream details
-                    DreamHeaderSection(dream: dream)
+                    DreamHeaderSection(dream: controller.dream)
                     Divider()
                     
-                    DreamOriginalTextSection(text: dream.text, fontOffset: fontScaler.offset)
+                    DreamOriginalTextSection(
+                        text: controller.dream.text,
+                        fontOffset: controller.fontOffset)
                     Divider()
                     
-                    DreamSummarySection(summary: dream.summary, fontOffset: fontScaler.offset)
+                    DreamSummarySection(
+                        summary: controller.dream.summary,
+                        fontOffset: controller.fontOffset)
                     Divider()
                     
-                    DreamMotifsSection(motifs: dream.motifs, fontOffset: fontScaler.offset)
+                    DreamMotifsSection(
+                        motifs: controller.dream.motifs,
+                        fontOffset: controller.fontOffset)
                     Divider()
                     
-                    DreamInterpretationSection(text: dream.personalInterpretation, fontOffset: fontScaler.offset)
+                    DreamInterpretationSection(
+                        text: controller.dream.personalInterpretation,
+                        fontOffset: controller.fontOffset)
                     Divider()
                     
-                    DreamWhatToDoNextSection(items: dream.whatToDoNext, fontOffset: fontScaler.offset)
+                    DreamWhatToDoNextSection(
+                        items: controller.dream.whatToDoNext,
+                        fontOffset: controller.fontOffset)
                     Divider()
                     
-                    DreamSentimentSection(sentiment: dream.sentiment, fontOffset: fontScaler.offset)
+                    DreamSentimentSection(
+                        sentiment: controller.dream.sentiment,
+                        fontOffset: controller.fontOffset)
                     
                     Spacer(minLength: 20)
                 }
@@ -55,7 +70,7 @@ struct DreamDetailView: View {
                 // minus button for font decrease
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        fontScaler.offset = max(fontScaler.offset - 1, -5)
+                        controller.decreaseFont()
                     } label: {
                         Image(systemName: "minus.magnifyingglass")
                             .foregroundColor(Color(hex: "#484848"))
@@ -65,13 +80,12 @@ struct DreamDetailView: View {
                 // plus button for font increase
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        fontScaler.offset = min(fontScaler.offset + 1, 5)
+                        controller.increaseFont()
                     } label: {
                         Image(systemName: "plus.magnifyingglass")
                             .foregroundColor(Color(hex: "#484848"))
                     }
                 }
-
             }
             .scrollContentBackground(.hidden)
             .background(.clear)
