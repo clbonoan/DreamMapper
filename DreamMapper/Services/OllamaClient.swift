@@ -44,8 +44,6 @@ struct OllamaClient {
     }
     
     // analysis
-//    private struct GenerateWrapper: Codable { let response: String }
-    
     // chat wrapper types
     private struct ChatResponse: Codable {
         struct Message: Codable {
@@ -153,7 +151,7 @@ struct OllamaClient {
             throw URLError(.badServerResponse)
         }
         
-        // for debugging: print raw body in console to see what the model sent
+        // for debugging: print raw body in console to see what the model sent back
         if let rawString = String(data: data, encoding: .utf8) {
             print("OLLAMA RAW CHAT RESPONSE:\n\(rawString)")
         }
@@ -189,10 +187,7 @@ struct OllamaClient {
         }
         
         throw URLError(.cannotParseResponse)
-//        let wrapped = try JSONDecoder().decode(GenerateWrapper.self, from: data)
-//        // parse JSON string inside the response
-//        let jsonData = Data(wrapped.response.utf8)
-//        
+
 //        return try JSONDecoder().decode(AnalyzeResponse.self, from: jsonData)
     }
 }

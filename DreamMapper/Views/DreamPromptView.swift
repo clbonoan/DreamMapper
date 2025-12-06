@@ -86,7 +86,7 @@ struct DreamPromptView: View {
                             }
                         }
                         
-                        // placeholder button for sending dream
+                        // button for sending dream
                         Button {
                             // saveDream()
                             // hide keyboard
@@ -178,6 +178,7 @@ struct DreamPromptView: View {
                                 .padding(.top, 6)
                         }
                         
+                        // check if ollama is connected
                         Button("Test Ollama Connection") {
                             Task {
                                 do {

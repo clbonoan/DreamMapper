@@ -29,4 +29,8 @@ struct AuraBubble: View {
     }
 }
 
+#Preview {
+    AuraBubble(color: .blue)
+}
+
 

@@ -3,7 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 11/14/25.
-//
+//  This lists all the user's analyzed dreams; user can delete them or read more details about the analysis
 
 import SwiftUI
 import SwiftData
@@ -23,7 +23,7 @@ struct DreamListView: View {
                 Group {
                     if dreams.isEmpty {
                         ContentUnavailableView {
-                            Label("No Dreams", systemImage: "tray")
+                            Label("No Dreams", systemImage: "zzz")
                                 .font(.custom("AlegreyaSans-Medium", size: 26))
                                 .foregroundColor(Color(hex: "#484848"))
                         } description: {
@@ -39,23 +39,26 @@ struct DreamListView: View {
                                 } label: {
                                     DreamRowView(dream: dream)
                                 }
+                                // change color of row based on sentiment
+                                .listRowBackground(
+                                    dream.sentimentColor.opacity(0.6)
+                                )
                             }
                             .onDelete(perform: delete)
                         }
                         .listStyle(.insetGrouped)
                         .scrollContentBackground(.hidden)
                         .background(.clear)
-                        .listRowBackground(Color.clear)
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("My Dreams")
-                        .font(.custom("AlegreyaSans-Bold", size: 40))
-                        .foregroundColor(Color(hex: "#B6CFB6"))
-                }
-            }
+//            .toolbar {
+//                ToolbarItem(placement: .principal) {
+//                    Text("My Dreams")
+//                        .font(.custom("AlegreyaSans-Bold", size: 40))
+//                        .foregroundColor(Color(hex: "#B6CFB6"))
+//                }
+//            }
         }
     }
     // allow user to delete their dream (default is swiping left on item)
@@ -94,6 +97,32 @@ private struct DreamRowView: View {
             text += " +"
         }
         return text
+    }
+}
+
+// row color based on analyzed dream sentiment
+extension Dream {
+    var sentimentColor: Color {
+        switch sentiment {
+        case "calm":
+            return Color(hex: "#CFE8FF")   // soft blue
+        case "stressed":
+            return Color(hex: "#FFD0D0")   // light red
+        case "mixed":
+            return Color(hex: "#E5E5E5")   // light gray
+        case "sad":
+            return Color(hex: "#D0D8FF")   // muted blue
+        case "hopeful":
+            return Color(hex: "#D7F2C2")   // soft green
+        case "confused":
+            return Color(hex: "#E3D3FF")   // lavender
+        case "angry":
+            return Color(hex: "#FFB3B3")   // stronger red/pink
+        case "joyful":
+            return Color(hex: "#FFF2B3")   // soft yellow
+        default:
+            return Color(hex: "#EFEFE8")
+        }
     }
 }
 

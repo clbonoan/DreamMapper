@@ -3,7 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 11/14/25.
-//  This view lets users see the dream analysis details in text format.
+//  This view lets users see the dream analysis details in readable text format.
 
 import SwiftUI
 import SwiftData
@@ -57,10 +57,9 @@ struct DreamDetailView: View {
                     Button {
                         fontScaler.offset = max(fontScaler.offset - 1, -5)
                     } label: {
-                        Image(systemName: "minus.circle")
+                        Image(systemName: "minus.magnifyingglass")
                             .foregroundColor(Color(hex: "#484848"))
                     }
-                    .background(Color(hex: "#B6CFB6"))
                 }
                 
                 // plus button for font increase
@@ -68,10 +67,9 @@ struct DreamDetailView: View {
                     Button {
                         fontScaler.offset = min(fontScaler.offset + 1, 5)
                     } label: {
-                        Image(systemName: "plus.circle")
+                        Image(systemName: "plus.magnifyingglass")
                             .foregroundColor(Color(hex: "#484848"))
                     }
-                    .background(Color(hex: "#B6CFB6"))
                 }
 
             }
