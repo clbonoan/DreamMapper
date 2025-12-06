@@ -13,8 +13,19 @@ struct AuraBubble: View {
     var body: some View {
         Circle()
             .fill(
-                
+                RadialGradient(
+                    gradient: Gradient(colors: [
+                        color.opacity(0.9),   // center
+                        color.opacity(0.0)    // edges fade out
+                    ]),
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: 120
+                )
             )
+            .frame(width: 240, height: 240)
+            .blur(radius: 35)
+            .blendMode(.screen)
     }
 }
 
