@@ -106,9 +106,16 @@ struct DreamPromptView: View {
                                 do {
                                     let out = try await ollama.generateAnalysis(text: text, title: title)
                                     // show preview on screen to see if it worked
+                                    let motifsText = out.motifs.map { motif in
+                                        "- \(motif.symbol): \(motif.meaning)"
+                                    }.joined(separator: "\n")
+                                    
                                     analysisPreview = """
-                                    Summary: \(out.summary)
-                                    Motifs: \(out.motifs.map { "- \($0.symbol): \($0.meaning)" }.joined(separator: "\n"))
+                                    Summary:
+                                    \(out.summary)
+
+                                    Motifs:
+                                    \(motifsText.isEmpty ? "(none)" : motifsText)
                                     """
                                 } catch {
                                     analysisPreview = "Analysis failed: \(error.localizedDescription)"

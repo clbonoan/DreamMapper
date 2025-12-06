@@ -44,10 +44,30 @@ struct OllamaClient {
     }
     
     // analysis
-    private struct GenerateWrapper: Codable { let response: String }
+//    private struct GenerateWrapper: Codable { let response: String }
+    
+    // chat wrapper types
+    private struct ChatResponse: Codable {
+        struct Message: Codable {
+            let role: String
+            let content: String
+        }
+        let message: Message
+    }
+
+    // Helper to pull out the first {...} block from a string
+    private func extractFirstJSONObject(from s: String) -> String? {
+        guard let start = s.firstIndex(of: "{"),
+              let end   = s.lastIndex(of: "}") else { return nil }
+        return String(s[start...end])
+    }
     
     // call Ollama (/api/generate) and get strictly JSON in the response string
-    func generateAnalysis(text: String, title: String? = nil, model: String = "gpt-oss:20b") async throws -> AnalyzeResponse {
+    func generateAnalysis(
+        text: String,
+        title: String? = nil,
+        model: String = "gpt-oss:20b"
+    ) async throws -> AnalyzeResponse {
         // prompt the model to give a specific response (how to respond)
         let system = """
             You are a dream analysis engine. The user will provide a dream TITLE and DREAM TEXT. Your job is to return a single, strict JSON object with detailed, practical insights. Follow these rules exactly:
@@ -102,16 +122,10 @@ struct OllamaClient {
             - "motifs" length: 3–6 if possible; else >=1 if the dream is extremely short.
             - Each motif.meaning <= 2 sentences.
             - "whatToDoNext" length: 3–6 if possible.
-            
-            FINAL CHECK:
-            - Validate that the JSON parses without errors.
-            - Only return the JSON object-nothing else.
             """
         
         // combine instructions with the user's dream
-        let prompt = """
-        \(system)
-        
+        let userContent = """
         Dream Title: \(title ?? "(user provided)")
 
         Dream Text:
@@ -119,12 +133,15 @@ struct OllamaClient {
         """
         
         // configure the request
-        var req = URLRequest(url: baseURL.appendingPathComponent("/api/generate"))
+        var req = URLRequest(url: baseURL.appendingPathComponent("/api/chat"))
         req.httpMethod = "POST"
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONSerialization.data(withJSONObject: [
             "model": "gpt-oss:20b",
-            "prompt": prompt,
+            "messages": [
+                ["role": "system", "content": system],
+                ["role": "user", "content": userContent]
+            ],
             "stream": false,
             "format": "json",
             "options": ["temperature": 0.2] // lowers randomness
@@ -136,12 +153,53 @@ struct OllamaClient {
             throw URLError(.badServerResponse)
         }
         
-        // decode Ollama's wrapper
-        let wrapped = try JSONDecoder().decode(GenerateWrapper.self, from: data)
-        // parse JSON string inside the response
-        let jsonData = Data(wrapped.response.utf8)
+        // for debugging: print raw body in console to see what the model sent
+        if let rawString = String(data: data, encoding: .utf8) {
+            print("OLLAMA RAW CHAT RESPONSE:\n\(rawString)")
+        }
         
-        return try JSONDecoder().decode(AnalyzeResponse.self, from: jsonData)
+        // decode the /api/chat wrapper
+        struct ChatResponse: Codable {
+            struct Message: Codable {
+                let role: String
+                let content: String
+                // thinking is present in the JSON, but we don't need it;
+                // unknown keys are ignored automatically.
+            }
+            let message: Message
+        }
+        
+        // decode chat wrapper (model -> message.content)
+        let chat = try JSONDecoder().decode(ChatResponse.self, from: data)
+        let content = chat.message.content
+        
+        // try to decode content directly as JSON
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        
+        if let jsonData = content.data(using: .utf8) {
+            do {
+                let result = try decoder.decode(AnalyzeResponse.self, from: jsonData)
+                return result
+            } catch {
+                // log in the console for debugging
+                print("failed to decode AnalyzeResponse from content: \(content)")
+                throw error
+            }
+        }
+        
+        // if there is extra text, grab the first {...} block
+//        if let json = extractFirstJSONObject(from: content),
+//           let cleaned = json.data(using: .utf8) {
+//            return try decoder.decode(AnalyzeResponse.self, from: cleaned)
+//        }
+        
+        throw URLError(.cannotParseResponse)
+//        let wrapped = try JSONDecoder().decode(GenerateWrapper.self, from: data)
+//        // parse JSON string inside the response
+//        let jsonData = Data(wrapped.response.utf8)
+//        
+//        return try JSONDecoder().decode(AnalyzeResponse.self, from: jsonData)
     }
 }
 
