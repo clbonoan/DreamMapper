@@ -25,9 +25,14 @@ struct DreamPromptView: View {
     @State private var pingOutput: String = ""
     private let ollama = OllamaClient()
     
-    //
+    // check for Ollama running and output results
     @State private var isAnalyzing = false
     @State private var analysisPreview: String = ""
+    
+    // state for alerts
+    @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     
     private let minChars = 8
     
@@ -88,11 +93,10 @@ struct DreamPromptView: View {
                         
                         // button for sending dream
                         Button {
-                            // saveDream()
                             // hide keyboard
                             isTextFocused = false
                             
-                            // validation dream entry
+                            // validation for dream entry
                             let text = dreamText.trimmingCharacters(in: .whitespacesAndNewlines)
                             let title = dreamTitle.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard text.count >= 8 else { return }
@@ -147,13 +151,34 @@ struct DreamPromptView: View {
                                     Motifs:
                                     \(motifsText.isEmpty ? "(none)" : motifsText)
                                     """
+                                    
+                                    // clear inputs after successful return
+                                    await MainActor.run {
+                                        dreamTitle = ""
+                                        dreamText = ""
+                                        alertTitle = "Success"
+                                        alertMessage = "Your dream has been analyzed and saved!"
+                                        showAlert = true
+                                        // move focus back to editor when done
+                                        isTextFocused = true
+                                    }
                                 } catch {
-                                    analysisPreview = "Analysis failed: \(error.localizedDescription)"
+                                    await MainActor.run {
+                                        analysisPreview = "Analysis failed: \(error.localizedDescription)"
+                                        alertTitle = "Error"
+                                        alertMessage = error.localizedDescription + "\nPlease try again."
+                                        showAlert = true
+                                    }
                                 }
-                                isAnalyzing = false
+                                
+                                // if it is clearing inputs, that means it's done analyzing
+                                await MainActor.run {
+                                    isAnalyzing = false
+                                }
                             }
                         } label: {
                             if isAnalyzing {
+                                // show rotating wheel when analyzing is in progress
                                 ProgressView()
                                     .padding(.vertical, 12)
                                     .padding(.horizontal, 20)
@@ -209,6 +234,11 @@ struct DreamPromptView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 24)
+                .alert(alertTitle, isPresented: $showAlert) {
+                    Button("ok", role: .cancel) {}
+                } message: {
+                    Text(alertMessage)
+                }
             }
         }
     }
