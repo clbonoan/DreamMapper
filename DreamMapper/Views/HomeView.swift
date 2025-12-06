@@ -44,7 +44,7 @@ extension Color {
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var items: [Dream]
     
     @State private var xOffset: CGFloat = 0
     
@@ -105,7 +105,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Dream.self, inMemory: true)
 }
 
 

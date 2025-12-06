@@ -188,12 +188,6 @@ struct OllamaClient {
             }
         }
         
-        // if there is extra text, grab the first {...} block
-//        if let json = extractFirstJSONObject(from: content),
-//           let cleaned = json.data(using: .utf8) {
-//            return try decoder.decode(AnalyzeResponse.self, from: cleaned)
-//        }
-        
         throw URLError(.cannotParseResponse)
 //        let wrapped = try JSONDecoder().decode(GenerateWrapper.self, from: data)
 //        // parse JSON string inside the response

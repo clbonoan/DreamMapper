@@ -10,7 +10,8 @@ import SwiftData
 
 struct DreamPromptView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query(sort: \Dream.createdAt, order: .reverse)
+    private var dreams: [Dream]
     
     // variables for typing title, dream, and focusing cursor in text box
     @State private var dreamTitle = ""
@@ -39,7 +40,6 @@ struct DreamPromptView: View {
                     ClockView()
                         .padding(.top, 20)
                         .padding(.bottom, 50)
-                    
                     
                     VStack(spacing: 15) {
                         Text("share what happened in your dream\nand find out what it means")
@@ -105,11 +105,41 @@ struct DreamPromptView: View {
                             Task {
                                 do {
                                     let out = try await ollama.generateAnalysis(text: text, title: title)
+                                    
+                                    // convert motifs from DTO -> SwiftData models
+                                    let motifModels = out.motifs.map { motifDTO in Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)
+                                    }
+                                    
+                                    // create a new Dream model
+                                    let dream = Dream(
+                                        title: title.isEmpty ? "Untitled dream" : title,
+                                        text: text,
+                                        summary: out.summary,
+                                        sentiment: out.sentiment,
+                                        personalInterpretation: out.personalInterpretation,
+                                        whatToDoNext: out.whatToDoNext,
+                                        motifs: motifModels
+                                    )
+                                    
+                                    // insert into SwiftData and save
+                                    modelContext.insert(dream)
+                                    do {
+                                        try modelContext.save()
+                                    } catch {
+                                        print("failed to save dream: \(error)")
+                                    }
+                                    
                                     // show preview on screen to see if it worked
                                     let motifsText = out.motifs.map { motif in
                                         "- \(motif.symbol): \(motif.meaning)"
                                     }.joined(separator: "\n")
                                     
+                                    // print in console to check output
+                                    print("TITLE:", title)
+                                    print("SUMMARY:", out.summary)
+                                    print("MOTIFS:", out.motifs)
+                                    
+                                    // preview on screen
                                     analysisPreview = """
                                     Summary:
                                     \(out.summary)
@@ -121,12 +151,6 @@ struct DreamPromptView: View {
                                     analysisPreview = "Analysis failed: \(error.localizedDescription)"
                                 }
                                 isAnalyzing = false
-//                                    let raw = try await ollama.debugGenerateRaw(text: text, title: dreamTitle)
-//                                    analysisPreview = "RAW:\n\(raw)"
-//                                } catch {
-//                                    analysisPreview = "Analysis failed: \(error.localizedDescription)"
-//                                }
-//                                isAnalyzing = false
                             }
                         } label: {
                             if isAnalyzing {
@@ -214,5 +238,5 @@ struct ClockView: View {
 
 #Preview {
     DreamPromptView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Dream.self, inMemory: true)
 }

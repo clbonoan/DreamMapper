@@ -10,7 +10,7 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var items: [Dream]
     
     var body: some View {
         NavigationStack {
@@ -26,5 +26,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Dream.self, inMemory: true)
 }
