@@ -11,6 +11,8 @@ import SwiftData
 struct DreamMapView: View {
     @Query(sort: \Dream.createdAt, order: .reverse)
     private var dreams: [Dream]
+    @State private var showNodes = false
+    @State private var zoomScale: CGFloat = 1.0
     
     // palette of aura colors to choose from
     private let auraPalette: [Color] = [
@@ -53,26 +55,41 @@ struct DreamMapView: View {
                                 dream: dream,
                                 auraColor: colorForDream(dream, index: index)
                             )
-                            .position(positionForIndex(index))
+                            .position(randomPosition(in: canvasSize))
+                            .scaleEffect(showNodes ? 1 : 0.5)
+                            .opacity(showNodes ? 1 : 0)
+                            .animation(
+                            .spring(response: 0.2, dampingFraction: 0.4)
+                            .delay(Double(index) * 0.02),
+                            value: showNodes
+                            )
+                                    
                         }
                     }
+                    //.scaleEffect(zoomScale)
+                    //.animation(.easeInOut, value: zoomScale)
                     // this makes the content larger than the screen, so you can scroll around
                     .frame(width: canvasSize.width, height: canvasSize.height)
+                    
                 }
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { amount in zoomScale = amount }
+                )
+            }
+            .onAppear {
+                showNodes = true
             }
             .navigationBarTitle("Dream Map")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
     // deterministic node positions so nodes don't move to different spots every reload
-    private func positionForIndex(_ index: Int) -> CGPoint {
-        let row = index / columns
-        let col = index % columns
-        
-        let x = 150 + CGFloat(col) * spacing
-        let y = 150 + CGFloat(row) * spacing
-        
-        return CGPoint(x: x, y: y)
+    private func randomPosition(in canvas: CGSize) -> CGPoint {
+        CGPoint(
+            x: CGFloat.random(in: 100...(canvas.width - 100)),
+            y: CGFloat.random(in: 100...(canvas.height - 100))
+        )
     }
     
     // choose a color per dream

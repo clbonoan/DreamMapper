@@ -72,14 +72,14 @@ struct HomeView: View {
                         .padding(.bottom, 0)
                         // decrease padding at top of image
                         .padding(.top, -50)
-                    Text("Dreamí")
+                    Text("Astral")
                         .font(.custom("MouseMemoirs-Regular", size: 110))
                         .foregroundColor(Color(hex: "#B6CFB6"))
                         // add space in between letters
                         .tracking(3)
                         .padding(.top, -50)
                         .navigationBarBackButtonHidden(true)
-                    Text("Your Personal Dream Companion")
+                    Text("Your Spirit Travel Journies")
                         .font(.custom("AlegreyaSans-Medium", size: 26))
                         .foregroundColor(Color(hex: "#484848"))
                         .padding(.bottom, 30)
