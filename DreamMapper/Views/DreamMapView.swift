@@ -105,5 +105,5 @@ struct DreamMapView: View {
 
 #Preview {
     DreamMapView()
-        .modelContainer(for: Dream.self, inMemory: true)
+        .modelContainer(for: [Dream.self, Motif.self], inMemory: true)
 }

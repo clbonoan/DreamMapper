@@ -13,10 +13,11 @@ struct DreamMapperApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Dream.self,
-            Motif.self,
-            NextAction.self
+            Motif.self
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: isPreview)
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])

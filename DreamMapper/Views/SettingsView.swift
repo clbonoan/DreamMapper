@@ -48,6 +48,8 @@ struct SettingsView: View {
                 .listRowBackground(Color(hex: "#B6CFB6"))
             }
             .navigationTitle("Settings")
+            .scrollContentBackground(.hidden) // hide the default Form background
+            .background(Color.clear)
         }
         .onAppear {
             controller.attachContext(modelContext)
@@ -86,5 +88,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .modelContainer(for: Dream.self, inMemory: true)
+        .modelContainer(for: [Dream.self, Motif.self], inMemory: true)
 }

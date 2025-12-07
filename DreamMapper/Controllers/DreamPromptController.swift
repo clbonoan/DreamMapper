@@ -67,7 +67,7 @@ final class DreamPromptController: ObservableObject {
                 let motifModels = out.motifs.map { motifDTO in
                     Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)
                 }
-                let nextSteps = out.whatToDoNext.map { NextAction(text: $0) }
+
                 // create and save Dream model
                 let dream = Dream(
                     title: title.isEmpty ? "Untitled dream" : title,
@@ -75,7 +75,7 @@ final class DreamPromptController: ObservableObject {
                     summary: out.summary,
                     sentiment: out.sentiment,
                     personalInterpretation: out.personalInterpretation,
-                    whatToDoNext: nextSteps,
+                    whatToDoNext: out.whatToDoNext,
                     motifs: motifModels,
                     moonPhase: moonPhase
                 )

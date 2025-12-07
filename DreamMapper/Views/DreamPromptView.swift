@@ -81,11 +81,11 @@ struct DreamPromptView: View {
                                 // show rotating wheel when analyzing is in progress
                                 ProgressView()
                                 
-                                Text("Analyzing your dream…")
-                                           .font(.footnote)
-                                           .foregroundColor(.secondary)
-                                    .padding(.vertical, 12)
-                                    .padding(.horizontal, 20)
+//                                Text("Analyzing your dream…")
+//                                           .font(.footnote)
+//                                           .foregroundColor(.secondary)
+//                                    .padding(.vertical, 12)
+//                                    .padding(.horizontal, 20)
                             } else {
                                 Label("Analyze Dream", systemImage: "wand.and.stars")
                                     .font(.custom("AlegreyaSans-Regular", size: 14))
@@ -130,7 +130,7 @@ struct DreamPromptView: View {
                 }
                 .padding(.horizontal, 24)
                 .alert(controller.alertTitle, isPresented: $controller.showAlert) {
-                    Button("ok", role: .cancel) {}
+                    Button("OK", role: .cancel) {}
                 } message: {
                     Text(controller.alertMessage)
                 }
@@ -167,5 +167,5 @@ struct ClockView: View {
 
 #Preview {
     DreamPromptView()
-        .modelContainer(for: Dream.self, inMemory: true)
+        .modelContainer(for: [Dream.self, Motif.self], inMemory: true)
 }

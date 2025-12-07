@@ -22,7 +22,7 @@ struct MotifDTO: Codable {
 }
 
 struct OllamaClient {
-    var baseURL = URL(string: "http://127.0.0.1:11434")!
+    var baseURL = URL(string: "http://localhost:11434")!
 
     struct TagsResponse: Codable {
         struct ModelTag: Codable { let name: String }
@@ -135,7 +135,7 @@ struct OllamaClient {
         req.httpMethod = "POST"
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONSerialization.data(withJSONObject: [
-            "model": "llama3:latest",
+            "model": "gpt-oss:20b",
             "messages": [
                 ["role": "system", "content": system],
                 ["role": "user", "content": userContent]

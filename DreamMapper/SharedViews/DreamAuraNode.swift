@@ -52,7 +52,7 @@ struct DreamAuraNode: View {
                         Text(motif.symbol)
                             .font(.custom("AlegreyaSans-Regular", size: 14))
                             .foregroundColor(Color(hex: "#484848"))
-                            .rotationEffect(.degrees(orbit ? 360 : 0))
+                            //.rotationEffect(.degrees(orbit ? 360 : 0))
                             .offset(
                                     x: radius * cos((baseAngle * .pi / 180)),
                                     y: radius * sin((baseAngle * .pi / 180))
@@ -66,7 +66,7 @@ struct DreamAuraNode: View {
                 }
             }
             .frame(width: 260, height: 260)
-            .offset(y: float ? -6 : 6)
+            .offset(y: float ? -4 : 4)
             .animation(.easeInOut(duration: 3).repeatForever(),
                        value: float)
             .onAppear {
@@ -121,10 +121,7 @@ struct MotifBulletLabel: View {
         summary: "A confrontation dream showing stress.",
         sentiment: "stressed",
         personalInterpretation: "This dream reflects feelings of pressure or conflict.",
-        whatToDoNext: [
-            NextAction(text: "Reflect on current stressors"),
-            NextAction(text: "Practice grounding")
-        ],
+        whatToDoNext: ["Reflect on current stressors", "Practice grounding"],
         motifs: [
             Motif(symbol: "fighting", meaning: "Represents conflict."),
             Motif(symbol: "big guy", meaning: "Feeling overpowered."),

@@ -8,7 +8,6 @@
 import Foundation
 import CoreLocation
 
-
 struct TimeAndDateMoonResponse: Codable {
         struct Location: Codable {
                 struct Astronomy: Codable {
@@ -65,7 +64,7 @@ struct MoonClient {
 
         let decoded = try JSONDecoder().decode(TimeAndDateMoonResponse.self, from: data)
 
-        // Drill down: locations[0] -> astronomy.objects[name == "moon"].days[0].moonphase
+        // locations[0] -> astronomy.objects[name == "moon"].days[0].moonphase
         if let location   = decoded.locations?.first,
            let astronomy  = location.astronomy,
            let moonObject = astronomy.objects?.first(where: { ($0.name ?? "").lowercased() == "moon" }),

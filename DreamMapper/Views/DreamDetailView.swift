@@ -27,7 +27,7 @@ struct DreamDetailView: View {
                     Divider()
                     
                     DreamMoonPhaseSection(
-                        moonPhase: controller.dream.moonPhase,
+                        moonPhase: controller.dream.moonPhase ?? "Unknown",
                         fontOffset: controller.fontOffset
                     )
                     Divider()
@@ -114,7 +114,44 @@ struct DreamHeaderSection: View {
                 .foregroundStyle(.secondary)
         }
     }
+}
 
+struct DreamMoonPhaseSection: View {
+    let moonPhase: String
+    let fontOffset: CGFloat
+    
+    private func moonEmoji(for phase: String) -> String {
+        let p = phase.lowercased()
+
+        switch true {
+        case p.contains("new"): return "🌑"
+        case p.contains("waxing crescent"): return "🌒"
+        case p.contains("first quarter"): return "🌓"
+        case p.contains("waxing gibbous"): return "🌔"
+        case p.contains("full"): return "🌕"
+        case p.contains("waning gibbous"): return "🌖"
+        case p.contains("last quarter"): return "🌗"
+        case p.contains("waning crescent"): return "🌘"
+        default: return "🌙"
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+
+            Text("Moon Phase")
+                .font(.custom("AlegreyaSans-Medium", size: 17 + fontOffset))
+
+            HStack(spacing: 8) {
+                Text(moonEmoji(for: moonPhase))
+                    .font(.system(size: 28))     // big emoji icon
+
+                Text(moonPhase)
+                    .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
+                    .foregroundStyle(.primary)
+            }
+        }
+    }
 }
     
 struct DreamOriginalTextSection: View {
@@ -192,7 +229,7 @@ struct DreamInterpretationSection: View {
 }
 
 struct DreamWhatToDoNextSection: View {
-    let items: [NextAction]
+    let items: [String]
     let fontOffset: CGFloat
     
     var body: some View {
@@ -205,10 +242,10 @@ struct DreamWhatToDoNextSection: View {
                     .foregroundStyle(.secondary)
             } else {
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(items) { item in
+                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                         HStack(alignment: .top, spacing: 4) {
-                            Text("•")
-                            Text(item.text)
+                            Text("-")
+                            Text(item)
                                 .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
                         }
                     }
@@ -229,43 +266,6 @@ struct DreamSentimentSection: View {
             
             Text(sentiment.capitalized)
                 .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
-        }
-    }
-}
-struct DreamMoonPhaseSection: View {
-    let moonPhase: String
-    let fontOffset: CGFloat
-    
-    private func moonEmoji(for phase: String) -> String {
-        let p = phase.lowercased()
-
-        switch true {
-        case p.contains("new"): return "🌑"
-        case p.contains("waxing crescent"): return "🌒"
-        case p.contains("first quarter"): return "🌓"
-        case p.contains("waxing gibbous"): return "🌔"
-        case p.contains("full"): return "🌕"
-        case p.contains("waning gibbous"): return "🌖"
-        case p.contains("last quarter"): return "🌗"
-        case p.contains("waning crescent"): return "🌘"
-        default: return "🌙"
-        }
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-
-            Text("Moon Phase")
-                .font(.custom("AlegreyaSans-Medium", size: 17 + fontOffset))
-
-            HStack(spacing: 8) {
-                Text(moonEmoji(for: moonPhase))
-                    .font(.system(size: 28))     // big emoji icon
-
-                Text(moonPhase)
-                    .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
-                    .foregroundStyle(.primary)
-            }
         }
     }
 }

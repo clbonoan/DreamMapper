@@ -10,7 +10,11 @@ import SwiftData
 
 struct DreamListView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var controller = DreamListController()
+    //@StateObject private var controller = DreamListController()
+    
+    // live-update fetch
+    @Query(sort: \Dream.createdAt, order: .reverse)
+    private var dreams: [Dream]
     
     var body: some View {
         NavigationStack {
@@ -19,51 +23,50 @@ struct DreamListView: View {
                     .ignoresSafeArea()
                 
                 // use Group to combine multiple views (DreamDetailView and DreamRowView)
-                Group {
-                    if controller.dreams.isEmpty {
-                        ContentUnavailableView {
-                            Label("No Dreams", systemImage: "zzz")
-                                .font(.custom("AlegreyaSans-Medium", size: 26))
-                                .foregroundColor(Color(hex: "#484848"))
-                        } description: {
-                            Text("Start Dreaming!")
-                                .font(.custom("AlegreyaSans-Medium", size: 20))
-                        }
-                    } else {
-                        List {
-                            // show list of dreams
-                            ForEach(controller.dreams) { dream in
-                                NavigationLink {
-                                    DreamDetailView(dream: dream)
-                                } label: {
-                                    DreamRowView(dream: dream)
-                                }
-                                // change color of row based on sentiment
-                                .listRowBackground(
-                                    dream.sentimentColor.opacity(0.6)
-                                )
-                            }
-                            .onDelete(perform: controller.delete)
-                        }
-                        .listStyle(.insetGrouped)
-                        .scrollContentBackground(.hidden)
-                        .background(.clear)
+                if dreams.isEmpty {
+                    // Simple empty state instead of ContentUnavailableView
+                    VStack(spacing: 8) {
+                        Image(systemName: "zzz")
+                            .font(.largeTitle)
+                            .foregroundColor(Color(hex: "#484848"))
+                        Label("No Dreams", systemImage: "")
+                            .font(.custom("AlegreyaSans-Medium", size: 26))
+                            .foregroundColor(Color(hex: "#484848"))
+                        
+                        Text("Start Dreaming!")
+                            .font(.custom("AlegreyaSans-Medium", size: 20))
+                            .foregroundColor(Color(hex: "#484848"))
                     }
+                } else {
+                    List {
+                        // show list of dreams
+                        ForEach(dreams) { dream in
+                            NavigationLink {
+                                DreamDetailView(dream: dream)
+                            } label: {
+                                DreamRowView(dream: dream)
+                            }
+                            // change color of row based on sentiment
+                            .listRowBackground(
+                                dream.sentimentColor.opacity(0.6)
+                            )
+                        }
+                        .onDelete(perform: delete)
+                    }
+                    .listStyle(.insetGrouped)
+                    .scrollContentBackground(.hidden)
+                    .background(.clear)
                 }
             }
-//            .toolbar {
-//                ToolbarItem(placement: .principal) {
-//                    Text("My Dreams")
-//                        .font(.custom("AlegreyaSans-Bold", size: 40))
-//                        .foregroundColor(Color(hex: "#B6CFB6"))
-//                }
-//            }
-        }
-        .onAppear {
-            controller.attachContext(modelContext)
         }
     }
+    // deletion using same context
+    private func delete(at offsets: IndexSet) {
+        for i in offsets { modelContext.delete(dreams[i]) }
+        try? modelContext.save()
+    }
 }
+
 
 // single row per dream in the list
 private struct DreamRowView: View {
@@ -125,5 +128,5 @@ extension Dream {
 
 #Preview {
     DreamListView()
-        .modelContainer(for: Dream.self, inMemory: true)
+        .modelContainer(for: [Dream.self, Motif.self], inMemory: true)
 }

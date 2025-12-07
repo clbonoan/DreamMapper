@@ -49,14 +49,14 @@ struct HomeView: View {
     @State private var xOffset: CGFloat = 0
     
     // console log to see if google fonts were correctly added
-    init() {
-        for family in UIFont.familyNames {
-            print(family)
-            for name in UIFont.fontNames(forFamilyName: family) {
-                print("  \(name)")
-            }
-        }
-    }
+//    init() {
+//        for family in UIFont.familyNames {
+//            print(family)
+//            for name in UIFont.fontNames(forFamilyName: family) {
+//                print("  \(name)")
+//            }
+//        }
+//    }
 
     var body: some View {
         NavigationStack {
@@ -72,14 +72,14 @@ struct HomeView: View {
                         .padding(.bottom, 0)
                         // decrease padding at top of image
                         .padding(.top, -50)
-                    Text("Astral")
+                    Text("Dreamí")
                         .font(.custom("MouseMemoirs-Regular", size: 110))
                         .foregroundColor(Color(hex: "#B6CFB6"))
                         // add space in between letters
                         .tracking(3)
                         .padding(.top, -50)
                         .navigationBarBackButtonHidden(true)
-                    Text("Your Spirit Travel Journies")
+                    Text("Your Personal Dream Companion")
                         .font(.custom("AlegreyaSans-Medium", size: 26))
                         .foregroundColor(Color(hex: "#484848"))
                         .padding(.bottom, 30)
@@ -105,7 +105,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-        .modelContainer(for: Dream.self, inMemory: true)
+        .modelContainer(for: [Dream.self, Motif.self], inMemory: true)
 }
 
 

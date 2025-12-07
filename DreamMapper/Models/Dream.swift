@@ -18,13 +18,12 @@ final class Dream {
     var summary: String
     var sentiment: String
     var personalInterpretation: String
-    var moonPhase: String
+    var whatToDoNext: [String]
+    var moonPhase: String?
     
     // relationship: one dream has many motifs
     @Relationship(deleteRule: .cascade)
     var motifs: [Motif]
-    var whatToDoNext: [NextAction]
-    
     
     init(
         title: String,
@@ -32,9 +31,9 @@ final class Dream {
         summary: String,
         sentiment: String,
         personalInterpretation: String,
-        whatToDoNext: [NextAction],
+        whatToDoNext: [String],
         motifs: [Motif] = [],
-        moonPhase: String = "Unknown"
+        moonPhase: String? = nil,
     ) {
         self.createdAt = Date()
         self.title = title
