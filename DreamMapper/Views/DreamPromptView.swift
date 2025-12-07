@@ -27,7 +27,7 @@ struct DreamPromptView: View {
                         .padding(.bottom, 50)
                     
                     VStack(spacing: 15) {
-                        Text("share what happened in your dream\nand find out what it means")
+                        Text("What did you dream about last night?")
                             .font(.custom("AlegreyaSans-Medium", size: 22))
                             .multilineTextAlignment(.center)
                         
@@ -80,6 +80,10 @@ struct DreamPromptView: View {
                             if controller.isAnalyzing {
                                 // show rotating wheel when analyzing is in progress
                                 ProgressView()
+                                
+                                Text("Analyzing your dream…")
+                                           .font(.footnote)
+                                           .foregroundColor(.secondary)
                                     .padding(.vertical, 12)
                                     .padding(.horizontal, 20)
                             } else {
@@ -94,14 +98,14 @@ struct DreamPromptView: View {
                         .padding(.top, 6)
                         .disabled(!controller.canAnalyze)
                         
-                        // show summary preview
-                        if !controller.analysisPreview.isEmpty {
-                            Text(controller.analysisPreview)
-                                .font(.footnote)
-                                .foregroundColor(.black)
-                                .multilineTextAlignment(.leading)
-                                .padding(.top, 6)
-                        }
+//                        // show summary preview
+//                        if !controller.analysisPreview.isEmpty {
+//                            Text(controller.analysisPreview)
+//                                .font(.footnote)
+//                                .foregroundColor(.black)
+//                                .multilineTextAlignment(.leading)
+//                                .padding(.top, 6)
+//                        }
                         
                         // test ollama button
                         Button("Test Ollama Connection") {
@@ -113,7 +117,7 @@ struct DreamPromptView: View {
                         .background(Color.black.opacity(0.08), in: Capsule())
                         .foregroundColor(.black)
                         .padding(.top, 6)
-                        
+//                        
                         if !controller.pingOutput.isEmpty {
                             Text(controller.pingOutput)
                                 .font(.footnote)

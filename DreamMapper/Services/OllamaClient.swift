@@ -22,7 +22,7 @@ struct MotifDTO: Codable {
 }
 
 struct OllamaClient {
-    var baseURL = URL(string: "http://localhost:11434")!
+    var baseURL = URL(string: "http://127.0.0.1:11434")!
 
     struct TagsResponse: Codable {
         struct ModelTag: Codable { let name: String }
@@ -31,7 +31,7 @@ struct OllamaClient {
 
     // check connectivity
     func pingModels() async throws -> [String] {
-        let url = baseURL.appendingPathComponent("/api/tags")
+        let url = baseURL.appendingPathComponent("api/tags")
         var req = URLRequest(url: url)
         req.httpMethod = "GET"
 
@@ -64,7 +64,7 @@ struct OllamaClient {
     func generateAnalysis(
         text: String,
         title: String? = nil,
-        model: String = "gpt-oss:20b"
+        model: String = "llama3:latest"
     ) async throws -> AnalyzeResponse {
         // prompt the model to give a specific response (how to respond)
         let system = """
@@ -131,11 +131,11 @@ struct OllamaClient {
         """
         
         // configure the request
-        var req = URLRequest(url: baseURL.appendingPathComponent("/api/chat"))
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/chat"))
         req.httpMethod = "POST"
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONSerialization.data(withJSONObject: [
-            "model": "gpt-oss:20b",
+            "model": "llama3:latest",
             "messages": [
                 ["role": "system", "content": system],
                 ["role": "user", "content": userContent]
@@ -194,7 +194,7 @@ struct OllamaClient {
 
 extension OllamaClient {
     // returns raw string from ollama
-    func debugGenerateRaw(text: String, title: String? = nil, model: String = "gpt-oss:20b") async throws -> String {
+    func debugGenerateRaw(text: String, title: String? = nil, model: String = "llama3:latest") async throws -> String {
         let system = """
         You analyze dreams. The user already provides a title.
         Output STRICT JSON ONLY with keys:
@@ -211,7 +211,7 @@ extension OllamaClient {
         \"\"\"\(text)\"\"\"
         """
 
-        var req = URLRequest(url: baseURL.appendingPathComponent("/api/generate"))
+        var req = URLRequest(url: baseURL.appendingPathComponent("api/generate"))
         req.httpMethod = "POST"
         req.addValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONSerialization.data(withJSONObject: [

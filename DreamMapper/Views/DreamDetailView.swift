@@ -26,6 +26,12 @@ struct DreamDetailView: View {
                     DreamHeaderSection(dream: controller.dream)
                     Divider()
                     
+                    DreamMoonPhaseSection(
+                        moonPhase: controller.dream.moonPhase,
+                        fontOffset: controller.fontOffset
+                    )
+                    Divider()
+                    
                     DreamOriginalTextSection(
                         text: controller.dream.text,
                         fontOffset: controller.fontOffset)
@@ -54,6 +60,7 @@ struct DreamDetailView: View {
                     DreamSentimentSection(
                         sentiment: controller.dream.sentiment,
                         fontOffset: controller.fontOffset)
+                    
                     
                     Spacer(minLength: 20)
                 }
@@ -185,7 +192,7 @@ struct DreamInterpretationSection: View {
 }
 
 struct DreamWhatToDoNextSection: View {
-    let items: [String]
+    let items: [NextAction]
     let fontOffset: CGFloat
     
     var body: some View {
@@ -198,10 +205,10 @@ struct DreamWhatToDoNextSection: View {
                     .foregroundStyle(.secondary)
             } else {
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                    ForEach(items) { item in
                         HStack(alignment: .top, spacing: 4) {
-                            Text("-")
-                            Text(item)
+                            Text("•")
+                            Text(item.text)
                                 .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
                         }
                     }
@@ -225,4 +232,42 @@ struct DreamSentimentSection: View {
         }
     }
 }
+struct DreamMoonPhaseSection: View {
+    let moonPhase: String
+    let fontOffset: CGFloat
+    
+    private func moonEmoji(for phase: String) -> String {
+        let p = phase.lowercased()
+
+        switch true {
+        case p.contains("new"): return "🌑"
+        case p.contains("waxing crescent"): return "🌒"
+        case p.contains("first quarter"): return "🌓"
+        case p.contains("waxing gibbous"): return "🌔"
+        case p.contains("full"): return "🌕"
+        case p.contains("waning gibbous"): return "🌖"
+        case p.contains("last quarter"): return "🌗"
+        case p.contains("waning crescent"): return "🌘"
+        default: return "🌙"
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+
+            Text("Moon Phase")
+                .font(.custom("AlegreyaSans-Medium", size: 17 + fontOffset))
+
+            HStack(spacing: 8) {
+                Text(moonEmoji(for: moonPhase))
+                    .font(.system(size: 28))     // big emoji icon
+
+                Text(moonPhase)
+                    .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
+                    .foregroundStyle(.primary)
+            }
+        }
+    }
+}
+
 

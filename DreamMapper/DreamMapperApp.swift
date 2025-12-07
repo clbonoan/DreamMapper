@@ -13,7 +13,8 @@ struct DreamMapperApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Dream.self,
-            Motif.self
+            Motif.self,
+            NextAction.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

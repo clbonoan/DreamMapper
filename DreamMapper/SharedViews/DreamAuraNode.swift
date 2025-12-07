@@ -76,7 +76,10 @@ struct MotifBulletLabel: View {
         summary: "A confrontation dream showing stress.",
         sentiment: "stressed",
         personalInterpretation: "This dream reflects feelings of pressure or conflict.",
-        whatToDoNext: ["Reflect on current stressors", "Practice grounding"],
+        whatToDoNext: [
+            NextAction(text: "Reflect on current stressors"),
+            NextAction(text: "Practice grounding")
+        ],
         motifs: [
             Motif(symbol: "fighting", meaning: "Represents conflict."),
             Motif(symbol: "big guy", meaning: "Feeling overpowered."),

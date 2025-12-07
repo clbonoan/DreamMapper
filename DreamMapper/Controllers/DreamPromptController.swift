@@ -33,6 +33,7 @@ final class DreamPromptController: ObservableObject {
     private let minChars = 8
     private let ollama = OllamaClient()
     private var modelContext: ModelContext?
+    private let moon = MoonClient()
     
     init() {}
     
@@ -61,12 +62,12 @@ final class DreamPromptController: ObservableObject {
             do {
                 // call ollama
                 let out = try await ollama.generateAnalysis(text: text, title: title)
-                
+                let moonPhase = try await moon.fetchMoonPhase(for: Date())
                 // convert motifs from DTO -> SwiftData models
                 let motifModels = out.motifs.map { motifDTO in
                     Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)
                 }
-                
+                let nextSteps = out.whatToDoNext.map { NextAction(text: $0) }
                 // create and save Dream model
                 let dream = Dream(
                     title: title.isEmpty ? "Untitled dream" : title,
@@ -74,8 +75,9 @@ final class DreamPromptController: ObservableObject {
                     summary: out.summary,
                     sentiment: out.sentiment,
                     personalInterpretation: out.personalInterpretation,
-                    whatToDoNext: out.whatToDoNext,
-                    motifs: motifModels
+                    whatToDoNext: nextSteps,
+                    motifs: motifModels,
+                    moonPhase: moonPhase
                 )
                 
                 // insert into SwiftData and save
@@ -95,6 +97,7 @@ final class DreamPromptController: ObservableObject {
                 print("TITLE:", title)
                 print("SUMMARY:", out.summary)
                 print("MOTIFS:", out.motifs)
+                print("MOON PHASE:", moonPhase)
                 
                 // preview on screen
                 await MainActor.run {
@@ -110,7 +113,7 @@ final class DreamPromptController: ObservableObject {
                     dreamTitle = ""
                     dreamText = ""
                     alertTitle = "Success"
-                    alertMessage = "Your dream has been analyzed and saved!"
+                    alertMessage = "✨Your dream has been analyzed and saved✨"
                     showAlert = true
                     // move focus back to editor when done
                     shouldRefocusEditor = true
