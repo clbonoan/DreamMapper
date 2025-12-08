@@ -24,7 +24,12 @@ struct DreamMapView: View {
         Color(hex: "#FFFFB5"),  // yellow
         Color(hex: "#FFC8A2"),  // orange
         Color(hex: "#CBAACB"),  // purple
-        Color(hex: "#97C1A9")  // green
+        Color(hex: "#97C1A9"),  // green
+        Color(hex: "#FFDBCC"),  // light orange
+        Color(hex: "#D4F0F0"),  // light blue
+        Color(hex: "#ECD5E3"),  // light purple
+        Color(hex: "#FAEDCB"),  // darkish yellow
+        Color(hex: "#FFC5BF")   // light pink-red
     ]
     
     // spacing and layout config for grid of nodes

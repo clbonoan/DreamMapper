@@ -94,7 +94,7 @@ struct AboutDreamiView: View {
                 .padding(10)
             }
             .background(Color(hex: "#15151b"))
-            .navigationTitle("About Dreamí")
+            //.navigationTitle("About Dreamí")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
