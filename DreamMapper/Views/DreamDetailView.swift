@@ -270,6 +270,8 @@ struct DreamWhatToDoNextSection: View {
                     ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                         HStack(alignment: .top, spacing: 4) {
                             Text("-")
+                                .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
+                                .foregroundColor(Color(hex: "F4F3EE"))
                             Text(item)
                                 .font(.custom("AlegreyaSans-Regular", size: 16 + fontOffset))
                                 .foregroundColor(Color(hex: "F4F3EE"))
