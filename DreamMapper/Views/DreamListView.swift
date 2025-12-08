@@ -19,7 +19,7 @@ struct DreamListView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "#F4F3EE")
+                Color(hex: "#15151b")
                     .ignoresSafeArea()
                 
                 // use Group to combine multiple views (DreamDetailView and DreamRowView)
@@ -28,14 +28,14 @@ struct DreamListView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "zzz")
                             .font(.largeTitle)
-                            .foregroundColor(Color(hex: "#484848"))
+                            .foregroundColor(Color(hex: "#F4F3EE"))
                         Label("No Dreams", systemImage: "")
                             .font(.custom("AlegreyaSans-Medium", size: 26))
-                            .foregroundColor(Color(hex: "#484848"))
+                            .foregroundColor(Color(hex: "#F4F3EE"))
                         
-                        Text("Start Dreaming!")
+                        Text("Write an Entry!")
                             .font(.custom("AlegreyaSans-Medium", size: 20))
-                            .foregroundColor(Color(hex: "#484848"))
+                            .foregroundColor(Color(hex: "#F4F3EE"))
                     }
                 } else {
                     List {

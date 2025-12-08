@@ -61,10 +61,10 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "#F4F3EE") 
+                Color(hex: "#15151b") 
                     .ignoresSafeArea()
                 VStack {
-                    Image("dream-home")
+                    Image("dream-home2")
                         // rotate line image to the left to make it leveled
                         .rotationEffect(.degrees(-18))
                         .offset(x: -60)
@@ -81,7 +81,8 @@ struct HomeView: View {
                         .navigationBarBackButtonHidden(true)
                     Text("Your Personal Dream Companion")
                         .font(.custom("AlegreyaSans-Medium", size: 26))
-                        .foregroundColor(Color(hex: "#484848"))
+                        //.foregroundColor(Color(hex: "#484848"))
+                        .foregroundColor(Color(hex: "#F4F3EE"))
                         .padding(.bottom, 30)
                     
                     // after clicking get started, show nav bar

@@ -14,7 +14,7 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "#F4F3EE")
+            Color(hex: "#15151b")
                 .ignoresSafeArea()
             
             Form {

@@ -19,7 +19,7 @@ struct DreamPromptView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "#F4F3EE")
+                Color(hex: "#15151b")
                     .ignoresSafeArea()
                 VStack {
                     ClockView()
@@ -30,6 +30,7 @@ struct DreamPromptView: View {
                         Text("What did you dream about last night?")
                             .font(.custom("AlegreyaSans-Medium", size: 22))
                             .multilineTextAlignment(.center)
+                            .foregroundColor(Color(hex: "#F4F3EE"))
                         
                         // text field for dream title
                         ZStack(alignment: .topLeading) {
@@ -66,6 +67,7 @@ struct DreamPromptView: View {
                             if controller.dreamText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                                 Text("type your dream here...")
                                     .foregroundColor(.secondary)
+                                    .font(.custom("AlegreyaSans-Regular", size: 20))
                                     .padding(.horizontal, 15)
                                     .padding(.vertical, 20)
                             }
@@ -80,12 +82,11 @@ struct DreamPromptView: View {
                             if controller.isAnalyzing {
                                 // show rotating wheel when analyzing is in progress
                                 ProgressView()
-                                
+                                    .padding(.vertical, 12)
+                                    .padding(.horizontal, 20)
 //                                Text("Analyzing your dream…")
 //                                           .font(.footnote)
 //                                           .foregroundColor(.secondary)
-//                                    .padding(.vertical, 12)
-//                                    .padding(.horizontal, 20)
                             } else {
                                 Label("Analyze Dream", systemImage: "wand.and.stars")
                                     .font(.custom("AlegreyaSans-Regular", size: 14))
@@ -114,14 +115,14 @@ struct DreamPromptView: View {
                         .font(.custom("AlegreyaSans-Regular", size: 14))
                         .padding(.vertical, 10)
                         .padding(.horizontal, 16)
-                        .background(Color.black.opacity(0.08), in: Capsule())
-                        .foregroundColor(.black)
+                        .background(Color.gray.opacity(0.3), in: Capsule())
+                        .foregroundColor(Color(hex: "#F4F3EE"))
                         .padding(.top, 6)
 //                        
                         if !controller.pingOutput.isEmpty {
                             Text(controller.pingOutput)
                                 .font(.footnote)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(Color(hex: "#F4F3EE"))
                                 .multilineTextAlignment(.center)
                                 .padding(.top, 4)
                         }

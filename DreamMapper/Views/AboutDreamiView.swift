@@ -16,6 +16,7 @@ struct AboutDreamiView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("What is Dreamí?")
                         .font(.custom("AlegreyaSans-Bold", size: 26))
+                        .foregroundStyle(.white)
                         .padding()
                         .padding(.bottom, -40)
                     Text(
@@ -24,12 +25,15 @@ struct AboutDreamiView: View {
                         """
                     )
                         .font(.custom("AlegreyaSans-Regular", size: 18))
+                        .foregroundStyle(.white)
                         .padding()
                     
                     Divider()
+                        .overlay(Color(hex: "#B6CFB6"))
                     
                     Text("How it works")
                         .font(.custom("AlegreyaSans-Bold", size: 22))
+                        .foregroundStyle(.white)
                         .padding()
                         .padding(.bottom, -40)
                     
@@ -42,12 +46,15 @@ struct AboutDreamiView: View {
                         """
                     )
                         .font(.custom("AlegreyaSans-Regular", size: 18))
+                        .foregroundStyle(.white)
                         .padding()
                     
                     Divider()
+                        .overlay(Color(hex: "#B6CFB6"))
                     
                     Text("What gets stored")
                         .font(.custom("AlegreyaSans-Bold", size: 22))
+                        .foregroundStyle(.white)
                         .padding()
                         .padding(.bottom, -40)
                     
@@ -63,12 +70,15 @@ struct AboutDreamiView: View {
                         """
                     )
                         .font(.custom("AlegreyaSans-Regular", size: 18))
+                        .foregroundStyle(.white)
                         .padding()
                     
                     Divider()
+                        .overlay(Color(hex: "#B6CFB6"))
                     
                     Text("Privacy and data")
                         .font(.custom("AlegreyaSans-Bold", size: 22))
+                        .foregroundStyle(.white)
                         .padding()
                         .padding(.bottom, -40)
                     
@@ -78,11 +88,12 @@ struct AboutDreamiView: View {
                         """
                     )
                         .font(.custom("AlegreyaSans-Regular", size: 18))
+                        .foregroundStyle(.white)
                         .padding()
                 }
                 .padding(10)
             }
-            .background(Color(hex: "#EFEFE8"))
+            .background(Color(hex: "#15151b"))
             .navigationTitle("About Dreamí")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

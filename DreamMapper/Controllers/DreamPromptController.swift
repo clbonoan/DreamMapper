@@ -62,7 +62,7 @@ final class DreamPromptController: ObservableObject {
             do {
                 // call ollama
                 let out = try await ollama.generateAnalysis(text: text, title: title)
-                let moonPhase = try await moon.fetchMoonPhase(for: Date())
+                let moonPhase = out.moonPhase
                 // convert motifs from DTO -> SwiftData models
                 let motifModels = out.motifs.map { motifDTO in
                     Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)

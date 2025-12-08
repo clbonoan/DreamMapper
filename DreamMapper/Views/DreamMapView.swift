@@ -14,6 +14,8 @@ struct DreamMapView: View {
     @State private var showNodes = false
     @State private var zoomScale: CGFloat = 1.0
     
+    // match DreamAuraNode frame size
+    private let nodeSize: CGFloat = 280
     // palette of aura colors to choose from
     private let auraPalette: [Color] = [
         Color(hex: "#FF968A"),  // pink-red
@@ -26,8 +28,11 @@ struct DreamMapView: View {
     ]
     
     // spacing and layout config for grid of nodes
-    private let spacing: CGFloat = 260
+    private let baseSpacing: CGFloat = 60
     private let columns: Int = 4
+    private var spacing: CGFloat {
+        nodeSize + baseSpacing
+    }
     
     // canvas (view) grows with number of dreams
     private var canvasSize: CGSize {
@@ -43,7 +48,8 @@ struct DreamMapView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "#F4F3EE")
+//                Color(hex: "#F4F3EE")
+                Color(hex: "#15151b")
                     .ignoresSafeArea()
                 
                 // canvas you can move through left/right/up/down
@@ -58,11 +64,12 @@ struct DreamMapView: View {
                             .position(positionForIndex(index))
                             .scaleEffect(showNodes ? 1 : 0.5)
                             .opacity(showNodes ? 1 : 0)
-                            //.animation(
-                            //.spring(response: 0.2, dampingFraction: 0.4)
-                            //.delay(Double(index) * 0.02),
-                            //value: showNodes
-                            //)
+                            // moves dreams around the map
+                            .animation(
+                                .spring(response: 1.5, dampingFraction: 0.7)
+                                .delay(Double(index) * 0.02),
+                                value: showNodes
+                            )
                                     
                         }
                     }
@@ -102,10 +109,10 @@ struct DreamMapView: View {
         var x = startX + CGFloat(col) * spacing
         var y = startY + CGFloat(row) * spacing
 
-        // small, repeatable nudge based on index
-        let jitter: CGFloat = 20
-        x += CGFloat((index * 37) % 21) - jitter / 2
-        y += CGFloat((index * 53) % 21) - jitter / 2
+        // small movement based on placement
+        let jitter: CGFloat = 16
+        x += CGFloat((index * 37) % Int(jitter)) - jitter / 2
+        y += CGFloat((index * 53) % Int(jitter)) - jitter / 2
 
         return CGPoint(x: x, y: y)
     }

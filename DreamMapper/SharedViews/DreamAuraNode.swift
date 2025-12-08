@@ -17,57 +17,84 @@ struct DreamAuraNode: View {
     @State private var float = false
     @State private var isExpanded = false
     @State private var orbit = false
+    // to show meanings for dream title and motifs
+    @State private var selectedMotif: Motif? = nil
+    @State private var showMotifPopup = false
+    @State private var showSummary = false
+    @State private var selectedTitle: Dream? = nil
 
     var body: some View {
-                ZStack {
-                    // CENTERED AURA BUBBLE
-                    AuraBubble(color: auraColor)
-                        .frame(width: 260, height: 260)
-                        .opacity(0.9)
+        ZStack {
+            // CENTERED AURA BUBBLE
+            AuraBubble(color: auraColor)
+                .frame(width: 260, height: 260)
+                .opacity(0.9)
 
-                    // DREAM TITLE
-                    Text(dream.title.isEmpty ? "Untitled" : dream.title)
-                        .font(.custom("AlegreyaSans-Bold", size: 24))
-                        .foregroundColor(Color(hex: "#484848"))
-
-                    ZStack{
-                    ForEach(Array(dream.motifs.prefix(maxMotifsShown).enumerated()), id: \.element.id) { index, motif in
-                        let count = dream.motifs.prefix(maxMotifsShown).count
-                        let baseAngle = 360.0 / Double(count) * Double(index)
-                        let radius: CGFloat = 100   // fixed stable orbit
-                                           
-                        // ORBITING TEXT LABEL
-                        Text(motif.symbol)
-                            .font(.custom("AlegreyaSans-Regular", size: 14))
-                            .foregroundColor(Color(hex: "#484848"))
-                            //.rotationEffect(.degrees(orbit ? 360 : 0))
-                            .offset(
-                                    x: radius * cos((baseAngle * .pi / 180)),
-                                    y: radius * sin((baseAngle * .pi / 180))
-                                    )
-//                            .animation(
-//                                        .linear(duration: 12)
-//                                        .repeatForever(autoreverses: false),
-//                                        value: orbit
-//                                        )
-                    }
+            // DREAM TITLE
+            Text(dream.title.isEmpty ? "Untitled" : dream.title)
+                .font(.custom("AlegreyaSans-Bold", size: 24))
+                .foregroundColor(Color(hex: "#484848"))
+                .onTapGesture {
+                    showSummary = true
                 }
+
+            ZStack{
+            ForEach(Array(dream.motifs.prefix(maxMotifsShown).enumerated()), id: \.element.id) { index, motif in
+                let count = dream.motifs.prefix(maxMotifsShown).count
+                let baseAngle = 360.0 / Double(count) * Double(index)
+                let radius: CGFloat = 115   // fixed stable orbit
+                                   
+                // ORBITING TEXT LABEL
+                Text(motif.symbol)
+                    .font(.custom("AlegreyaSans-Regular", size: 14))
+                    .foregroundColor(Color(hex: "#484848"))
+                    //.rotationEffect(.degrees(orbit ? 360 : 0))
+                    .offset(
+                        x: radius * cos((baseAngle * .pi / 180)),
+                        y: radius * sin((baseAngle * .pi / 180))
+                    )
+                    .onTapGesture {
+                        selectedMotif = motif
+                        showMotifPopup = true
+                    }
+                    .animation(
+                        .linear(duration: 5)
+                        .repeatForever(autoreverses: false),
+                        value: orbit
+                    )
             }
-            // canvas bigger than view
-            .frame(width: 260, height: 260)
-            .background(
-                AuraBubble(color: auraColor)   // aura behind the dream
-                    .allowsHitTesting(false)
-            )
-            .offset(y: float ? -4 : 4)
-//            .animation(.easeInOut(duration: 3).repeatForever(),
-//                       value: float)
-//            .onAppear {
-//                float = true
-//                orbit = true
-//            }
         }
     }
+    // sizing the node
+    .frame(width: 260, height: 260)
+    .background(
+        AuraBubble(color: auraColor)   // aura behind the dream
+            .allowsHitTesting(false)
+    )
+        
+    // click motif functionaility
+    .alert("Motif: \(selectedMotif?.symbol ?? "")", isPresented: $showMotifPopup) {
+        Button("Close", role: .cancel) { }
+    } message: {
+        Text(selectedMotif?.meaning ?? "")
+    }
+        
+    // click dream title functionality
+    .alert("Interpretation for \(dream.title)", isPresented: $showSummary) {
+        Button("Close", role: .cancel) { }
+    } message: {
+        Text(dream.personalInterpretation)
+            .font(.custom("AlegreyaSans-Regular", size: 16))
+    }
+        
+    .offset(y: float ? -4 : 4)
+    .animation(.easeInOut(duration: 2).repeatForever(), value: float)
+    .onAppear {
+        float = true
+        orbit = true
+    }
+    }
+}
 
 #Preview {
     let sampleDream = Dream(
