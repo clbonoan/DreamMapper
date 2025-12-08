@@ -8,7 +8,7 @@ import cors from "cors";
 const app = express();
 const PORT = 3000;
 
-// config
+// API config
 const OLLAMA_BASE_URL = "http://localhost:11434";
 const MOON_ACCESS_KEY = process.env.MOON_ACCESS_KEY;
 const MOON_SECRET_KEY = process.env.MOON_SECRET_KEY;
@@ -20,7 +20,7 @@ if (!MOON_ACCESS_KEY || !MOON_SECRET_KEY) {
 app.use(cors());
 app.use(express.json());
 
-// helpers
+// helper to normalize a moon phase string to readable text
 function normalizeMoonPhase(raw) {
     const lower = (raw || "").toLowerCase();
     switch (lower) {
@@ -36,16 +36,17 @@ function normalizeMoonPhase(raw) {
     }
 }
 
-// server-side controller
+// main endpoint: analyze dream with ollama and get moon phase
 app.post("/api/analyzeDream", async (req, res) => {
     try {
         const {title, text, date, placeId } = req.body;
-        
+       
+	// basic validation
         if (!title || !text) {
             return res.status(400).json({ error: "missing title or text " });
         }
         
-        // call ollama on the server
+        // prompt to guide the LLM
         const systemPrompt =
         "You analyze dreams. The user already provides a title. " +
         "Output STRICT JSON ONLY with keys: summary, motifs[{symbol,meaning}], " +
@@ -53,10 +54,12 @@ app.post("/api/analyzeDream", async (req, res) => {
         "Sentiment is in {calm, stressed, mixed, sad, hopeful, confused, angry, joyful}. " +
         "No markdown. No extra keys.";
         
+	// pass user input to model
         const userContent =
         `Dream Title: ${title}\n\n` +
         `Dream Text:\n"""${text}"""`;
         
+	// call ollama chat API
         const ollamaResp = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -77,6 +80,7 @@ app.post("/api/analyzeDream", async (req, res) => {
             return res.status(500).json({ error: "Ollama request failed" });
         }
         
+	// parse output
         const ollamaJson = await ollamaResp.json();
         const content = ollamaJson.message?.content;
         
@@ -87,19 +91,21 @@ app.post("/api/analyzeDream", async (req, res) => {
         
         let analysis;
         try {
+	    // strict JSON from the model
             analysis = JSON.parse(content);
         } catch (err) {
             console.error("Invalid JSON from Ollama:", content);
             return res.status(500).json({ error: "Invalid JSON from Ollama" });
         }
         
-        // call moon phase api
+        // prepare date for moon API
         const dateObj = date ? new Date(date) : new Date();
         const yyyy = dateObj.getFullYear();
         const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
         const dd = String(dateObj.getDate()).padStart(2, "0");
         const dateString = `${yyyy}-${mm}-${dd}`;
         
+	// moon phase API parameters
         const params = new URLSearchParams({
             version: "3",
             accesskey: MOON_ACCESS_KEY,
@@ -110,6 +116,7 @@ app.post("/api/analyzeDream", async (req, res) => {
             startdt: dateString
         });
         
+	// fetch moon data
         const moonResp = await fetch(
             `https://api.xmltime.com/astronomy?${params.toString()}`
         );
@@ -121,14 +128,16 @@ app.post("/api/analyzeDream", async (req, res) => {
         
         const moonJson = await moonResp.json();
         
+	// extract raw moon phase
         const rawPhase =
           moonJson?.locations?.[0]?.astronomy?.objects?.find(
             (o) => (o.name || "").toLowerCase() === "moon"
           )?.days?.[0]?.moonphase || "Unknown Phase";
         
+	// convert raw phase to readable text
         const moonPhase = normalizeMoonPhase(rawPhase);
         
-        // send final combined message to ios
+        // send final combined message to app
         res.json({
             summary: analysis.summary,
             motifs: analysis.motifs || [],
