@@ -17,12 +17,12 @@ struct DreamMapView: View {
     // palette of aura colors to choose from
     private let auraPalette: [Color] = [
         Color(hex: "#FF968A"),  // pink-red
-        Color(hex: "#ABDEE6"),  // blue
+        Color(hex: "#C6DEF1"),  // blue
         Color(hex: "#F3B0C3"),  // pink
         Color(hex: "#FFFFB5"),  // yellow
         Color(hex: "#FFC8A2"),  // orange
         Color(hex: "#CBAACB"),  // purple
-        Color(hex: "#97CIA9")  // green
+        Color(hex: "#97C1A9")  // green
     ]
     
     // spacing and layout config for grid of nodes
@@ -55,14 +55,14 @@ struct DreamMapView: View {
                                 dream: dream,
                                 auraColor: colorForDream(dream, index: index)
                             )
-                            .position(randomPosition(in: canvasSize))
+                            .position(positionForIndex(index))
                             .scaleEffect(showNodes ? 1 : 0.5)
                             .opacity(showNodes ? 1 : 0)
-                            .animation(
-                            .spring(response: 0.2, dampingFraction: 0.4)
-                            .delay(Double(index) * 0.02),
-                            value: showNodes
-                            )
+                            //.animation(
+                            //.spring(response: 0.2, dampingFraction: 0.4)
+                            //.delay(Double(index) * 0.02),
+                            //value: showNodes
+                            //)
                                     
                         }
                     }
@@ -84,13 +84,32 @@ struct DreamMapView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-    // deterministic node positions so nodes don't move to different spots every reload
-    private func randomPosition(in canvas: CGSize) -> CGPoint {
-        CGPoint(
-            x: CGFloat.random(in: 100...(canvas.width - 100)),
-            y: CGFloat.random(in: 100...(canvas.height - 100))
-        )
+    // deterministic, non-overlapping node positions
+//    private func randomPosition(in canvas: CGSize) -> CGPoint {
+//        CGPoint(
+//            x: CGFloat.random(in: 100...(canvas.width - 100)),
+//            y: CGFloat.random(in: 100...(canvas.height - 100))
+//        )
+//    }
+    
+    private func positionForIndex(_ index: Int) -> CGPoint {
+        let row = index / columns
+        let col = index % columns
+
+        let startX: CGFloat = 100 + spacing / 2
+        let startY: CGFloat = 100 + spacing / 2
+
+        var x = startX + CGFloat(col) * spacing
+        var y = startY + CGFloat(row) * spacing
+
+        // small, repeatable nudge based on index
+        let jitter: CGFloat = 20
+        x += CGFloat((index * 37) % 21) - jitter / 2
+        y += CGFloat((index * 53) % 21) - jitter / 2
+
+        return CGPoint(x: x, y: y)
     }
+
     
     // choose a color per dream
     private func colorForDream(_ dream: Dream, index: Int) -> Color {

@@ -3,7 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 12/6/25.
-//
+//  NOTE: THIS IS NOT BEING USED ANYMORE BECAUSE WE WANT LIFE UPDATE FETCHING
 
 import SwiftUI
 import SwiftData
