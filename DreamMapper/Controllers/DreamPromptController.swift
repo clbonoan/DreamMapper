@@ -15,7 +15,7 @@ final class DreamPromptController: ObservableObject {
     @Published var dreamTitle: String = ""
     @Published var dreamText: String = ""
     
-    // analysis state
+    // analysis progress and results state
     @Published var isAnalyzing: Bool = false
     @Published var analysisPreview: String = ""
     
@@ -48,6 +48,7 @@ final class DreamPromptController: ObservableObject {
         return !isAnalyzing && trimmed.count >= minChars
     }
     
+    // send dream to backend and save result to SwiftData
     func analyzeDream() {
         guard canAnalyze else { return }
         guard let modelContext else { return }
@@ -60,7 +61,7 @@ final class DreamPromptController: ObservableObject {
         
         Task {
             do {
-                // call ollama
+                // call backend to analyze dream
                 let out = try await ollama.generateAnalysis(text: text, title: title)
                 let moonPhase = out.moonPhase
                 // convert motifs from DTO -> SwiftData models
@@ -68,7 +69,7 @@ final class DreamPromptController: ObservableObject {
                     Motif(symbol: motifDTO.symbol, meaning: motifDTO.meaning)
                 }
 
-                // create and save Dream model
+                // create and save Dream model locally
                 let dream = Dream(
                     title: title.isEmpty ? "Untitled dream" : title,
                     text: text,
@@ -119,6 +120,7 @@ final class DreamPromptController: ObservableObject {
                     shouldRefocusEditor = true
                 }
             } catch {
+                // handle backend or decode issues
                 await MainActor.run {
                     analysisPreview = "Analysis failed: \(error.localizedDescription)"
                     alertTitle = "Error"
@@ -134,7 +136,7 @@ final class DreamPromptController: ObservableObject {
         }
     }
     
-    // check if ollama is connected
+    // check if ollama is directly connected (for debugging)
     func testOllamaConnection() {
         pingOutput = ""
         Task {

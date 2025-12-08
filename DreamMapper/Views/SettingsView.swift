@@ -3,7 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 11/14/25.
-//
+//  This is the settings view with the delete all dreams functionality and more info about the app.
 
 import SwiftUI
 import SwiftData

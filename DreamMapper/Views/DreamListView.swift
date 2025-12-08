@@ -22,9 +22,8 @@ struct DreamListView: View {
                 Color(hex: "#15151b")
                     .ignoresSafeArea()
                 
-                // use Group to combine multiple views (DreamDetailView and DreamRowView)
                 if dreams.isEmpty {
-                    // Simple empty state instead of ContentUnavailableView
+                    // empty state
                     VStack(spacing: 8) {
                         Image(systemName: "zzz")
                             .font(.largeTitle)
@@ -39,7 +38,7 @@ struct DreamListView: View {
                     }
                 } else {
                     List {
-                        // show list of dreams
+                        // show list of dreams with DreamRowView function
                         ForEach(dreams) { dream in
                             NavigationLink {
                                 DreamDetailView(dream: dream)
@@ -60,7 +59,7 @@ struct DreamListView: View {
             }
         }
     }
-    // deletion using same context
+    // delete dream from saved dreams
     private func delete(at offsets: IndexSet) {
         for i in offsets { modelContext.delete(dreams[i]) }
         try? modelContext.save()
@@ -83,6 +82,7 @@ private struct DreamRowView: View {
         }
     }
     
+    // show motifs in list preview before clicking to see details
     private var motifsPreview: String {
         let symbols = dream.motifs.map { $0.symbol }.filter { !$0.isEmpty }
         if symbols.isEmpty {

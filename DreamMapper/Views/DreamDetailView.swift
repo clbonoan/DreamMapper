@@ -110,6 +110,7 @@ struct DreamDetailView: View {
 struct DreamHeaderSection: View {
     let dream: Dream
     
+    // include title and date
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(dream.title.isEmpty ? "Untitled Dream" : dream.title)
@@ -131,18 +132,19 @@ struct DreamMoonPhaseSection: View {
         let p = phase.lowercased()
 
         switch true {
-        case p.contains("new"): return "🌑"
-        case p.contains("waxing crescent"): return "🌒"
-        case p.contains("first quarter"): return "🌓"
-        case p.contains("waxing gibbous"): return "🌔"
-        case p.contains("full"): return "🌕"
-        case p.contains("waning gibbous"): return "🌖"
-        case p.contains("last quarter"): return "🌗"
-        case p.contains("waning crescent"): return "🌘"
-        default: return "🌙"
+            case p.contains("new"): return "🌑"
+            case p.contains("waxing crescent"): return "🌒"
+            case p.contains("first quarter"): return "🌓"
+            case p.contains("waxing gibbous"): return "🌔"
+            case p.contains("full"): return "🌕"
+            case p.contains("waning gibbous"): return "🌖"
+            case p.contains("last quarter"): return "🌗"
+            case p.contains("waning crescent"): return "🌘"
+            default: return "🌙"
         }
     }
     
+    // based on what Moon API result is
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
 
@@ -166,6 +168,7 @@ struct DreamOriginalTextSection: View {
     let text: String
     let fontOffset: CGFloat
     
+    // include the user's dream entry
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Original Dream Entry")
@@ -183,6 +186,7 @@ struct DreamSummarySection: View {
     let summary: String
     let fontOffset: CGFloat
     
+    // include ollama's output of the dream summary
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Summary")
@@ -200,6 +204,7 @@ struct DreamMotifsSection: View {
     let motifs: [Motif]
     let fontOffset: CGFloat
     
+    // includes the motifs and their meanings
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Motifs")
@@ -232,6 +237,7 @@ struct DreamInterpretationSection: View {
     let text: String
     let fontOffset: CGFloat
     
+    // includes ollama's interpretation of the dream entry
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Personal Interpretation")
@@ -249,6 +255,7 @@ struct DreamWhatToDoNextSection: View {
     let items: [String]
     let fontOffset: CGFloat
     
+    // includes ollama's what to do suggestions
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("What To Do Next")
@@ -278,6 +285,7 @@ struct DreamSentimentSection: View {
     let sentiment: String
     let fontOffset: CGFloat
     
+    // includes ollama's given sentiment based on a specific array of sentiments provided
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Overall Sentiment")
@@ -292,7 +300,7 @@ struct DreamSentimentSection: View {
 }
 
 #Preview {
-    // sample motifs
+    // sample motifs for preview
     let sampleMotifs = [
         Motif(symbol: "fighting", meaning: "Represents conflict or inner struggle."),
         Motif(symbol: "tunnel", meaning: "Suggests transition or uncertainty."),
@@ -300,7 +308,7 @@ struct DreamSentimentSection: View {
         Motif(symbol: "chase", meaning: "Avoidance of a problem or emotion.")
     ]
 
-    // sample dream model
+    // sample dream model for preview
     let sampleDream = Dream(
         title: "Running Through a Tunnel",
         text: "I was running through a long tunnel while someone chased me. I felt scared but eventually found an exit into bright sunlight.",

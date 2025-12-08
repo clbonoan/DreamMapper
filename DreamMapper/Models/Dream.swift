@@ -21,7 +21,7 @@ final class Dream {
     var whatToDoNext: [String]
     var moonPhase: String?
     
-    // relationship: one dream has many motifs
+    // relationship: one dream has many motifs (1->M)
     @Relationship(deleteRule: .cascade)
     var motifs: [Motif]
     

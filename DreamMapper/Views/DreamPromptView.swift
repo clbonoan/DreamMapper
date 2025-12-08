@@ -3,7 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 11/18/25.
-//
+//  This is the view where the user can type out their dream entry.
 
 import SwiftUI
 import SwiftData
@@ -89,7 +89,7 @@ struct DreamPromptView: View {
 //                                           .foregroundColor(.secondary)
                             } else {
                                 Label("Analyze Dream", systemImage: "wand.and.stars")
-                                    .font(.custom("AlegreyaSans-Regular", size: 14))
+                                    .font(.custom("AlegreyaSans-Regular", size: 16))
                                     .padding(.vertical, 12)
                                     .padding(.horizontal, 20)
                             }
@@ -118,7 +118,8 @@ struct DreamPromptView: View {
                         .background(Color.gray.opacity(0.3), in: Capsule())
                         .foregroundColor(Color(hex: "#F4F3EE"))
                         .padding(.top, 6)
-//                        
+                        
+                        // show message that ping works/doesn't work
                         if !controller.pingOutput.isEmpty {
                             Text(controller.pingOutput)
                                 .font(.footnote)
@@ -140,6 +141,7 @@ struct DreamPromptView: View {
         .onAppear {
             controller.attachContext(modelContext)
         }
+        // put cursor back in dream text box after analyzing
         .onChange(of: controller.shouldRefocusEditor) {
             if controller.shouldRefocusEditor {
                 isTextFocused = true
@@ -155,7 +157,7 @@ struct ClockView: View {
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
             Text(context.date, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day().hour().minute().second())
-                .font(.custom("AlegreyaSans-Thin", size: 20))
+                .font(.custom("AlegreyaSans-Light", size: 20))
                 .foregroundColor(.black)
                 .padding(10)
                 .background(Color(hex: "#B6CFB6"))

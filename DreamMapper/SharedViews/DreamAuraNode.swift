@@ -10,6 +10,14 @@ import SwiftUI
 struct DreamAuraNode: View {
     let dream: Dream
     let auraColor: Color
+    let phaseDelay: Double
+    
+    // customize initializer to add phaseDelay
+    init(dream: Dream, auraColor: Color, phaseDelay: Double = 0) {
+        self.dream = dream
+        self.auraColor = auraColor
+        self.phaseDelay = phaseDelay
+    }
     
     // only allow up to 7 motif bullets to show around the title
     // the cap for motifs is 7 in the returned JSON from ollama
@@ -25,15 +33,16 @@ struct DreamAuraNode: View {
 
     var body: some View {
         ZStack {
-            // CENTERED AURA BUBBLE
+            // centered aura bubble
             AuraBubble(color: auraColor)
                 .frame(width: 260, height: 260)
                 .opacity(0.9)
 
-            // DREAM TITLE
+            // dream title
             Text(dream.title.isEmpty ? "Untitled" : dream.title)
                 .font(.custom("AlegreyaSans-Bold", size: 24))
                 .foregroundColor(Color(hex: "#484848"))
+                // display dream summary when you click the title
                 .onTapGesture {
                     showSummary = true
                 }
@@ -42,17 +51,20 @@ struct DreamAuraNode: View {
             ForEach(Array(dream.motifs.prefix(maxMotifsShown).enumerated()), id: \.element.id) { index, motif in
                 let count = dream.motifs.prefix(maxMotifsShown).count
                 let baseAngle = 360.0 / Double(count) * Double(index)
-                let radius: CGFloat = 115   // fixed stable orbit
+                // fixed stable orbit; this is spacing between the title and motifs
+                let radius: CGFloat = 115
                                    
-                // ORBITING TEXT LABEL
+                // orbiting motif text
                 Text(motif.symbol)
                     .font(.custom("AlegreyaSans-Regular", size: 14))
                     .foregroundColor(Color(hex: "#484848"))
                     //.rotationEffect(.degrees(orbit ? 360 : 0))
+                    // change where the motifs are placed respective to the title
                     .offset(
                         x: radius * cos((baseAngle * .pi / 180)),
                         y: radius * sin((baseAngle * .pi / 180))
                     )
+                    // display motif meaning when you click the motif
                     .onTapGesture {
                         selectedMotif = motif
                         showMotifPopup = true
@@ -68,7 +80,8 @@ struct DreamAuraNode: View {
     // sizing the node
     .frame(width: 260, height: 260)
     .background(
-        AuraBubble(color: auraColor)   // aura behind the dream
+        // aura behind the dream
+        AuraBubble(color: auraColor, phaseDelay: phaseDelay)
             .allowsHitTesting(false)
     )
         
@@ -97,6 +110,7 @@ struct DreamAuraNode: View {
 }
 
 #Preview {
+    // sample dream to see what output looks like
     let sampleDream = Dream(
         title: "Bad Dream",
         text: "I was fighting a big guy in a tunnel and hurt my ankle.",

@@ -1,5 +1,5 @@
 // server.js
-// backend for app - pur server-side controller
+// backend for app - pure server-side controller
 
 import "dotenv/config"; // load env file
 import express from "express";

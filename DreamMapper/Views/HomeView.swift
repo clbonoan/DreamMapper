@@ -3,8 +3,7 @@
 //  DreamMapper
 //
 //  Created by Christine Bonoan on 11/14/25.
-//  Home page with user input
-//
+//  Home page with user input.
 
 import SwiftUI
 import SwiftData
@@ -94,13 +93,11 @@ struct HomeView: View {
                             .background(Color(hex: "#B6CFB6"))
                             .foregroundColor(Color(hex: "#484848"))
                             .cornerRadius(10)
-                        
+        
                     }
-                        
                 }
             }
         }
-        
     }
 }
 
